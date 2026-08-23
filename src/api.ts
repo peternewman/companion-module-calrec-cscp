@@ -267,7 +267,6 @@ export class CalrecApi {
 		return this.faderStates.get(faderId)?.isRightToBoth ?? false
 	}
 
-
 	// --- Outbound commands ---------------------------------------------------
 
 	/** Queue an absolute protocol-level write; variables update when the console echoes. */

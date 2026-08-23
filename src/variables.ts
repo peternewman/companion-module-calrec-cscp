@@ -2,7 +2,6 @@ import type { CompanionVariableDefinition, CompanionVariableValues } from '@comp
 
 export type VariableValue = string | number
 
-
 export const FADER_VARIABLE_SUFFIXES = [
 	'label',
 	'level',
