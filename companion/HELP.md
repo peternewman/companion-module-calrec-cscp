@@ -35,6 +35,8 @@ The module provides variables for each fader (1-256):
 - `fader_X_label`: Fader label
 - `fader_X_pfl`: PFL state (On/Off, or Unknown — see below)
 - `fader_X_cut`: Cut state (On/Off)
+- `fader_X_left_to_both`: Left to both state (On/Off)
+- `fader_X_right_to_both`: Right to both state (On/Off)
 
 The console reports PFL only when it changes, and answers a PFL state request with "off" no
 matter what the fader is really doing. PFL therefore starts as `Unknown` after connecting and

@@ -49,6 +49,8 @@ interface FaderState {
 	/** null until the desk pushes a PFL change; it never reports PFL state on request. */
 	isPfl: boolean | null
 	label: string
+	isLeftToBoth: boolean
+	isRightToBoth: boolean
 }
 
 /**
@@ -255,6 +257,17 @@ export class CalrecApi {
 		return this.faderStates.get(faderId)?.isPfl ?? null
 	}
 
+	/** Last known left to both state. A fader the console has not reported reads as off. */
+	getFaderLeftToBoth(faderId: number): boolean {
+		return this.faderStates.get(faderId)?.isLeftToBoth ?? false
+	}
+
+	/** Last known right to both state. A fader the console has not reported reads as off. */
+	getFaderRightToBoth(faderId: number): boolean {
+		return this.faderStates.get(faderId)?.isRightToBoth ?? false
+	}
+
+
 	// --- Outbound commands ---------------------------------------------------
 
 	/** Queue an absolute protocol-level write; variables update when the console echoes. */
@@ -437,6 +450,12 @@ export class CalrecApi {
 			this.noteFloodActivity()
 			this.applyFaderLabel(faderId, sanitizeFaderLabel(label))
 		})
+
+		on('stereoImageChange', (faderId, image) => {
+			this.noteFloodActivity()
+			// this.logLiveChange(`Fader ${faderId + 1} stereo image state changed to ${image.leftToBoth}, ${image.rightToBoth}`)
+			this.applyFaderStereoImage(faderId, image.leftToBoth, image.rightToBoth)
+		})
 	}
 
 	// --- Ready sync ----------------------------------------------------------
@@ -587,6 +606,17 @@ export class CalrecApi {
 		this.host.setVariable(faderVariableId(faderId, 'label'), label)
 	}
 
+	/** Apply stereo image state — from the console or an optimistic local write — to cache and UI. */
+	private applyFaderStereoImage(faderId: number, leftToBoth: boolean, rightToBoth: boolean): void {
+		const state = this.getOrInitFaderState(faderId)
+		const changed = (state.isLeftToBoth !== leftToBoth) || (state.isRightToBoth !== rightToBoth)
+		state.isLeftToBoth = leftToBoth
+		state.isRightToBoth = rightToBoth
+		this.host.setVariable(faderVariableId(faderId, 'left_to_both'), leftToBoth ? 'On' : 'Off')
+		this.host.setVariable(faderVariableId(faderId, 'right_to_both'), rightToBoth ? 'On' : 'Off')
+		if (changed) this.host.checkFeedbacks('fader_stereo_image')
+	}
+
 	private getOrInitFaderState(faderId: number): FaderState {
 		let state = this.faderStates.get(faderId)
 		if (!state) {
@@ -595,6 +625,8 @@ export class CalrecApi {
 				levelDbValue: CHANNEL_FADER_MIN_DB,
 				isCut: false,
 				isPfl: null,
+				isLeftToBoth: false,
+				isRightToBoth: false,
 				label: '',
 			}
 			this.faderStates.set(faderId, state)
