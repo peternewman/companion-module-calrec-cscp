@@ -609,7 +609,7 @@ export class CalrecApi {
 	/** Apply stereo image state — from the console or an optimistic local write — to cache and UI. */
 	private applyFaderStereoImage(faderId: number, leftToBoth: boolean, rightToBoth: boolean): void {
 		const state = this.getOrInitFaderState(faderId)
-		const·changed·=·state.isLeftToBoth·!==·leftToBoth·||·state.isRightToBoth·!==·rightToBoth
+		const changed = state.isLeftToBoth !== leftToBoth || state.isRightToBoth !== rightToBoth
 		state.isLeftToBoth = leftToBoth
 		state.isRightToBoth = rightToBoth
 		this.host.setVariable(faderVariableId(faderId, 'left_to_both'), leftToBoth ? 'On' : 'Off')
