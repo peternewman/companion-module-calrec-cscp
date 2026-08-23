@@ -2,7 +2,16 @@ import type { CompanionVariableDefinition, CompanionVariableValues } from '@comp
 
 export type VariableValue = string | number
 
-export const FADER_VARIABLE_SUFFIXES = ['label', 'level', 'level_db', 'pfl', 'cut', 'left_to_both', 'right_to_both'] as const
+
+export·const·FADER_VARIABLE_SUFFIXES·=·[
+	'label',
+	'level',
+	'level_db',
+	'pfl',
+	'cut',
+	'left_to_both',
+	'right_to_both',
+]·as·const
 
 export type FaderVariableSuffix = (typeof FADER_VARIABLE_SUFFIXES)[number]
 
